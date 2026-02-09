@@ -6,10 +6,10 @@ const RPC_URL = "http://127.0.0.1:7545";
 
 // Deployer private key (Ganache)
 const PRIVATE_KEY =
-  "0x80d6b5629c313ec6ba692d64821c4d74ea615170485ec132c06995abd91ba147";
+  "0x3c451a1481913a3563a836534e59e0128332f7a0463fb4e81066ec512a600dfd";
 
 // Your deployed contract address
-const CONTRACT_ADDRESS = "0x7473A1efb55A0aa4e563d2D9394f85c75FF89075";
+const CONTRACT_ADDRESS = "0x5143B8DF60463ba6CC19e382302298a3953C6f57";
 
 // ABI from Hardhat artifact
 const artifactPath = "./artifacts/contracts/Verification.sol/Verification.json";
