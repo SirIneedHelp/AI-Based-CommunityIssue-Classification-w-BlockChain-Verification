@@ -2,6 +2,16 @@
 pragma solidity ^0.8.20;
 
 contract Verification {
+    // ✅ Access Control
+    address public owner;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not authorized");
+        _;
+    }
+
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
     struct Proof {
         bytes32 dataHash;
         string category;
@@ -21,12 +31,25 @@ contract Verification {
         address verifier
     );
 
+    constructor() {
+        owner = msg.sender; // deployer becomes owner
+        emit OwnershipTransferred(address(0), owner);
+    }
+
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "Zero address");
+        address prev = owner;
+        owner = newOwner;
+        emit OwnershipTransferred(prev, newOwner);
+    }
+
+    // ✅ Only the owner (your server wallet) can write verifications
     function recordVerification(
         uint256 reportId,
         bytes32 dataHash,
         string calldata category,
         string calldata modelVersion
-    ) external {
+    ) external onlyOwner {
         proofs[reportId] = Proof({
             dataHash: dataHash,
             category: category,

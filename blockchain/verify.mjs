@@ -4,12 +4,13 @@ import { ethers } from "ethers";
 // Ganache RPC
 const RPC_URL = "http://127.0.0.1:7545";
 
-// Deployer private key (Ganache)
-const PRIVATE_KEY =
-  "0x3c451a1481913a3563a836534e59e0128332f7a0463fb4e81066ec512a600dfd";
+// ✅ Use env var PRIVATE_KEY if provided, otherwise fallback to default deployer key
+const DEFAULT_PRIVATE_KEY =
+  "0x64880b7eb8c4f56d9333030a6c83e592c6b5ff59a167e7f209ed137004dc385e";
+const PRIVATE_KEY = process.env.PRIVATE_KEY || DEFAULT_PRIVATE_KEY;
 
 // Your deployed contract address
-const CONTRACT_ADDRESS = "0x5143B8DF60463ba6CC19e382302298a3953C6f57";
+const CONTRACT_ADDRESS = "0x0bB793123632b8F377FeB5DC160B63F42D45ce58";
 
 // ABI from Hardhat artifact
 const artifactPath = "./artifacts/contracts/Verification.sol/Verification.json";
@@ -18,11 +19,13 @@ function usage() {
   console.log(
     'Usage:\n  node verify.mjs <reportId> <dataHashHex> <category> <modelVersion>\n\n' +
       'Example:\n  node verify.mjs 12 0x' +
-      'a'.repeat(64) +
+      "a".repeat(64) +
       ' "Garbage" "v1"\n\n' +
       "Notes:\n" +
       "- reportId must be a number\n" +
-      "- dataHashHex must be 0x + 64 hex chars (bytes32)\n"
+      "- dataHashHex must be 0x + 64 hex chars (bytes32)\n" +
+      "- Optional: set PRIVATE_KEY env var to test non-owner\n" +
+      '  Example: PRIVATE_KEY="0x...." node verify.mjs ...\n'
   );
 }
 
@@ -60,13 +63,11 @@ async function main() {
 
   const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, wallet);
 
+  console.log("Caller address:", await wallet.getAddress());
+  console.log("Contract owner:", await contract.owner());
+
   console.log("Sending transaction...");
-  const tx = await contract.recordVerification(
-    reportId,
-    dataHashHex,
-    category,
-    modelVersion
-  );
+  const tx = await contract.recordVerification(reportId, dataHashHex, category, modelVersion);
 
   console.log("⏳ tx hash:", tx.hash);
   const receipt = await tx.wait();
@@ -74,6 +75,6 @@ async function main() {
 }
 
 main().catch((e) => {
-  console.error("❌ verify failed:", e);
+  console.error("❌ verify failed:", e?.shortMessage || e?.message || e);
   process.exit(1);
 });
