@@ -12,7 +12,7 @@ const config: HardhatUserConfig = {
       type: "http",
       url: "http://127.0.0.1:7545",
       accounts: [
-        "0x64880b7eb8c4f56d9333030a6c83e592c6b5ff59a167e7f209ed137004dc385e"
+        "0x99d8f2202e03882bb4387fd8fbcfa8916e9f7d9bd9f4f2f37483d6bc90f482cd"
       ],
     },
   },
